@@ -13,7 +13,7 @@ exports('DespawnInterior', function(objects, cb)
     cb()
 end)
 
-local function CreateShell(spawn, exit, model)
+local function createShell(spawn, exit, model)
     print(('Creating shell at spawn: %s with exit: %s and model: %s'):format(tostring(spawn), tostring(exit), tostring(model)))
     local objects = {}
     local poi = { exit = exit }
@@ -26,15 +26,15 @@ local function CreateShell(spawn, exit, model)
     return { objects, poi }
 end
 
-exports('CreateShell', function(spawn, exit, model)
-    return CreateShell(spawn, exit, model)
+exports('createShell', function(spawn, exit, model)
+    return createShell(spawn, exit, model)
 end)
 
 -- Starting Apartment
 
 exports('CreateApartmentFurnished', function(spawn)
     local exit = vector4(1.5, -10.0, 0.0, 358.50)
-    local shell = CreateShell(spawn, exit, 'furnitured_midapart')
+    local shell = createShell(spawn, exit, 'furnitured_midapart')
     local objects, poi = shell[1], shell[2]
 
     poi.clothes = vector4(-6.028, -9.5, 1.2, 2.263)
@@ -52,7 +52,7 @@ exports('CreateApartmentFurnished', function(spawn)
 end)
 
 exports('CreateHouseRobbery', function(spawn)
-    local shell = CreateShell(spawn, vector4(1.46, -10.33, 1.06, 0.39), 'furnitured_midapart')
+    local shell = createShell(spawn, vector4(1.46, -10.33, 1.06, 0.39), 'furnitured_midapart')
     return { shell[1], shell[2] }
 end)
 
@@ -77,6 +77,6 @@ local SHELLS = {
 for exportName, def in pairs(SHELLS) do
     exports(exportName, function(spawn)
         print(spawn)
-        return CreateShell(spawn, def.exit, def.model)
+        return createShell(spawn, def.exit, def.model)
     end)
 end
