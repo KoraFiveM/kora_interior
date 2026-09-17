@@ -14,7 +14,6 @@ exports('DespawnInterior', function(objects, cb)
 end)
 
 local function createShell(spawn, exit, model)
-    print(('Creating shell at spawn: %s with exit: %s and model: %s'):format(tostring(spawn), tostring(exit), tostring(model)))
     local objects = {}
     local poi = { exit = exit }
     local modelHash = type(model) == 'string' and joaat(model) or model
@@ -76,7 +75,6 @@ local SHELLS = {
 
 for exportName, def in pairs(SHELLS) do
     exports(exportName, function(spawn)
-        print(spawn)
         return createShell(spawn, def.exit, def.model)
     end)
 end
