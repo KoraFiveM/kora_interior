@@ -1,14 +1,5 @@
 local function createShell(spawn, exit, model)
-    local objects = {}
-    local poi = { exit = exit }
-    local modelHash = type(model) == 'string' and joaat(model) or model
-    QB.stream.loadModel(modelHash)
-    local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
-    SetModelAsNoLongerNeeded(modelHash)
-    FreezeEntityPosition(house, true)
-    objects[#objects + 1] = house
-    QB.visuals.fade(vector3(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z))
-    return {objects, poi}
+    return exports[GetCurrentResourceName()]:createShell(spawn, exit, model)
 end
 
 local SHELLS = {
