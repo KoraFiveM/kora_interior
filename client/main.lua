@@ -1,5 +1,54 @@
 local IsNew = false
 
+local ownedGeometry, stopped = {}, {}
+local geometry = QB.resources.registry(function(entity)
+    ownedGeometry[entity] = nil
+    if DoesEntityExist(entity) then DeleteEntity(entity) end
+end)
+
+-- Shared housing scenes need geometry without the legacy entry teleport.
+exports('createGeometry', function(spawn, exit, model)
+    local owner = GetInvokingResource() or GetCurrentResourceName()
+    local generation = stopped[owner]
+    for _, axis in ipairs({ 'x', 'y', 'z' }) do
+        if not spawn or not QB.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
+    end
+    local entity
+    local loaded, err = QB.stream.loadModel(model, function(hash)
+        if stopped[owner] ~= generation then return end
+        entity = CreateObjectNoOffset(hash, spawn.x, spawn.y, spawn.z, false, false, false)
+        if not entity or entity == 0 or not DoesEntityExist(entity) then entity = nil; return end
+        FreezeEntityPosition(entity, true)
+        geometry.track(owner, entity)
+        ownedGeometry[entity] = true
+    end)
+    if not loaded or not entity then return false, err or 'Shell geometry could not be created.' end
+    return { { entity }, { exit = exit } }
+end)
+
+exports('removeGeometry', function(objects)
+    if type(objects) ~= 'table' then return false, 'Shell objects are required.' end
+    local owner = GetInvokingResource() or GetCurrentResourceName()
+    for _, entity in ipairs(objects) do
+        if geometry.owner(entity) ~= owner then return false, 'Shell geometry belongs to another resource.' end
+    end
+    for _, entity in ipairs(objects) do
+        geometry.untrack(entity)
+        ownedGeometry[entity] = nil
+        if DoesEntityExist(entity) then DeleteEntity(entity) end
+    end
+    return true
+end)
+
+AddEventHandler('onClientResourceStop', function(resource)
+    stopped[resource] = (stopped[resource] or 0) + 1
+    if resource ~= GetCurrentResourceName() then return end
+    for entity in pairs(ownedGeometry) do
+        if DoesEntityExist(entity) then DeleteEntity(entity) end
+    end
+    ownedGeometry = {}
+end)
+
 RegisterNetEvent('qb-interior:client:SetNewState', function(bool)
     IsNew = bool
 end)
