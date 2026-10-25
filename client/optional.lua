@@ -1,3 +1,8 @@
+local function legacyExport(name, handler)
+    exports(name, handler)
+    QB.compat.provideExport('qb-interior', name, handler)
+end
+
 local function createShell(spawn, exit, model)
     return exports[GetCurrentResourceName()]:createShell(spawn, exit, model)
 end
@@ -188,7 +193,7 @@ local SHELLS = {
 }
 
 for exportName, def in pairs(SHELLS) do
-    exports(exportName, function(spawn)
+    legacyExport(exportName, function(spawn)
         return createShell(spawn, def.exit, def.model)
     end)
 end

@@ -1,5 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
+
+provide 'qb-interior'
 lua54 'yes'
 author 'Kakarot'
 description 'Collection of shell models with exports for creating them'
