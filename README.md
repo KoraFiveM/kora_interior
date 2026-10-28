@@ -6,11 +6,11 @@ https://www.k4mb1maps.com/
 
 https://discord.gg/JrjkacM
 
-`exports.qbinterior:createGeometry(origin, exitOffset, model, placement)` returns
+`exports.kora_interior:createGeometry(origin, exitOffset, model, placement)` returns
 `{ objects, { exit = exitOffset } }` or `false, reason`. It creates frozen,
 local shell geometry without fading or moving the player. Models are released
 after creation; objects are owned by the invoking resource and removed when it
-stops. Call `exports.qbinterior:removeGeometry(objects)` to release them sooner.
+stops. Call `exports.kora_interior:removeGeometry(objects)` to release them sooner.
 Legacy `createShell` and named shell exports retain their entry teleport and authored heading.
 The optional placement is `centered` (default, `CreateObjectNoOffset`) or
 `legacy` (`CreateObject`, matching stock factories). Neither geometry mode
@@ -40,4 +40,4 @@ actual bundled `shell_garagem` archetype. See [asset evidence and placement limi
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
-Existing shell factories and `DespawnInterior` are also exported under `qb-interior`, using the same handlers and legacy object/POI return shapes. Native geometry ownership helpers remain under `qbinterior`. Optional shell models still require their corresponding installed assets; registering a factory does not install a paid or external shell pack.
+Existing shell factories and `DespawnInterior` are also exported under `qb-interior`, using the same handlers and legacy object/POI return shapes. Native geometry ownership helpers remain under `kora_interior`. Optional shell models still require their corresponding installed assets; registering a factory does not install a paid or external shell pack.

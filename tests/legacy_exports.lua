@@ -1,11 +1,11 @@
-package.path = '../qblib/test/?.lua;' .. package.path
+package.path = '../kora_lib/test/?.lua;' .. package.path
 local net = require('mocks').install()
-function GetCurrentResourceName() return 'qbinterior' end
+function GetCurrentResourceName() return 'kora_interior' end
 function GetInvokingResource() return 'legacy-consumer' end
-dofile('../qblib/build/initiate.lua')
-dofile('../qblib/modules/util/shared.lua')
-dofile('../qblib/local/resources/client.lua')
-QB.compat = dofile('../qblib/compat/provider.lua')()
+dofile('../kora_lib/build/initiate.lua')
+dofile('../kora_lib/modules/util/shared.lua')
+dofile('../kora_lib/local/resources/client.lua')
+QB.compat = dofile('../kora_lib/compat/provider.lua')()
 local provided, entities, released, fades, created = {}, {}, 0, {}, {}
 exports = setmetatable({}, { __call = function(_, name, fn) provided[name] = fn end,
     __index = function() return setmetatable({}, { __index = function(_, name)

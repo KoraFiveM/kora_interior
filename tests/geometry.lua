@@ -1,11 +1,11 @@
-package.path = '../qblib/test/?.lua;' .. package.path
+package.path = '../kora_lib/test/?.lua;' .. package.path
 local net = require('mocks').install()
-local invoker = 'qbhousing'
-function GetCurrentResourceName() return 'qbinterior' end
+local invoker = 'kora_housing'
+function GetCurrentResourceName() return 'kora_interior' end
 function GetInvokingResource() return invoker end
-dofile('../qblib/build/initiate.lua')
-dofile('../qblib/modules/util/shared.lua')
-dofile('../qblib/local/resources/client.lua')
+dofile('../kora_lib/build/initiate.lua')
+dofile('../kora_lib/modules/util/shared.lua')
+dofile('../kora_lib/local/resources/client.lua')
 local provided, entities, released, fades, created = {}, {}, 0, 0, {}
 exports = function(name, handler) provided[name] = handler end
 function vector4(x, y, z, w) return { x = x, y = y, z = z, w = w } end
@@ -17,12 +17,12 @@ function FreezeEntityPosition() end
 QB.visuals = { fade = function() fades = fades + 1 end }
 local stopWhileLoading = false
 QB.stream = { loadModel = function(_, callback)
-    if stopWhileLoading then net.fire('onClientResourceStop', 'qbhousing') end
+    if stopWhileLoading then net.fire('onClientResourceStop', 'kora_housing') end
     callback(123)
     released = released + 1
     return 123
 end }
-QB.compat = dofile('../qblib/compat/provider.lua')()
+QB.compat = dofile('../kora_lib/compat/provider.lua')()
 dofile('client/main.lua')
 local checks = 0
 local function check(value, message) assert(value, message); checks = checks + 1 end
@@ -32,14 +32,14 @@ check(released == 1 and fades == 0, 'geometry uses the releasing model callback 
 check(created[1][1] == 'centered' and created[1][4] == 3, 'default geometry retains exact no-offset origin')
 invoker = 'foreign'
 check(provided.removeGeometry(result[1]) == false and entities[91], 'foreign resources cannot remove this geometry')
-invoker = 'qbhousing'
+invoker = 'kora_housing'
 check(provided.removeGeometry(result[1]) == true and not entities[91], 'owner removes geometry explicitly')
 local legacy = provided.createGeometry({ x = 1, y = 2, z = -27 }, {z=1}, 'standardmotel_shell', 'legacy')
 check(legacy[1][1] == 91 and created[#created][1] == 'legacy' and created[#created][4] == -27, 'legacy geometry uses the same native and unmodified origin as stock factories')
 check(legacy[2].exit.z == 1 and fades == 0, 'legacy geometry retains POI and never teleports')
 check(provided.createGeometry({x=1,y=2,z=3}, {}, 'shell_v16low', 'guess') == false, 'unrecognized placement does not create geometry')
 provided.createGeometry({ x = 1, y = 2, z = 3 }, {}, 'shell_v16low')
-net.fire('onClientResourceStop', 'qbhousing')
+net.fire('onClientResourceStop', 'kora_housing')
 check(not entities[91], 'owner stop removes geometry')
 stopWhileLoading = true
 check(provided.createGeometry({ x = 1, y = 2, z = 3 }, {}, 'shell_v16low') == false and not entities[91], 'owner stop during streaming cannot leave a late shell')
