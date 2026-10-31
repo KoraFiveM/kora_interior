@@ -1,6 +1,6 @@
 local function legacyExport(name, handler)
     exports(name, handler)
-    QB.compat.provideExport('qb-interior', name, handler)
+    Kora.compat.provideExport('qb-interior', name, handler)
 end
 
 local function createShell(spawn, exit, model)

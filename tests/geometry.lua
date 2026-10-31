@@ -14,15 +14,15 @@ function CreateObject(_,x,y,z) entities[91] = true; created[#created+1]={'legacy
 function DoesEntityExist(entity) return entities[entity] == true end
 function DeleteEntity(entity) entities[entity] = nil end
 function FreezeEntityPosition() end
-QB.visuals = { fade = function() fades = fades + 1 end }
+Kora.visuals = { fade = function() fades = fades + 1 end }
 local stopWhileLoading = false
-QB.stream = { loadModel = function(_, callback)
+Kora.stream = { loadModel = function(_, callback)
     if stopWhileLoading then net.fire('onClientResourceStop', 'kora_housing') end
     callback(123)
     released = released + 1
     return 123
 end }
-QB.compat = dofile('../kora_lib/compat/provider.lua')()
+Kora.compat = dofile('../kora_lib/compat/provider.lua')()
 dofile('client/main.lua')
 local checks = 0
 local function check(value, message) assert(value, message); checks = checks + 1 end

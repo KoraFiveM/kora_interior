@@ -5,7 +5,7 @@ function GetInvokingResource() return 'legacy-consumer' end
 dofile('../kora_lib/build/initiate.lua')
 dofile('../kora_lib/modules/util/shared.lua')
 dofile('../kora_lib/local/resources/client.lua')
-QB.compat = dofile('../kora_lib/compat/provider.lua')()
+Kora.compat = dofile('../kora_lib/compat/provider.lua')()
 local provided, entities, released, fades, created = {}, {}, 0, {}, {}
 exports = setmetatable({}, { __call = function(_, name, fn) provided[name] = fn end,
     __index = function() return setmetatable({}, { __index = function(_, name)
@@ -19,8 +19,8 @@ function DoesEntityExist(entity) return entities[entity] == true end
 function DeleteEntity(entity) entities[entity] = false end
 function SetModelAsNoLongerNeeded() released = released + 1 end
 function FreezeEntityPosition() end
-QB.visuals = {fade = function(position) fades[#fades+1] = position end}
-QB.stream = {loadModel = function() return 123 end}
+Kora.visuals = {fade = function(position) fades[#fades+1] = position end}
+Kora.stream = {loadModel = function() return 123 end}
 dofile('client/main.lua')
 dofile('client/optional.lua')
 local checks = 0

@@ -1,12 +1,12 @@
 local function legacyExport(name, handler)
     exports(name, handler)
-    QB.compat.provideExport('qb-interior', name, handler)
+    Kora.compat.provideExport('qb-interior', name, handler)
 end
 
 local IsNew = false
 
 local ownedGeometry, stopped = {}, {}
-local geometry = QB.resources.registry(function(entity)
+local geometry = Kora.resources.registry(function(entity)
     ownedGeometry[entity] = nil
     if DoesEntityExist(entity) then DeleteEntity(entity) end
 end)
@@ -16,11 +16,11 @@ exports('createGeometry', function(spawn, exit, model, placement)
     local owner = GetInvokingResource() or GetCurrentResourceName()
     local generation = stopped[owner]
     for _, axis in ipairs({ 'x', 'y', 'z' }) do
-        if not spawn or not QB.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
+        if not spawn or not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
     end
     if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
     local entity
-    local loaded, err = QB.stream.loadModel(model, function(hash)
+    local loaded, err = Kora.stream.loadModel(model, function(hash)
         if stopped[owner] ~= generation then return end
         -- Stock factories use CreateObject's model offset; centered native scenes
         -- deliberately keep their existing CreateObjectNoOffset contract.
@@ -75,12 +75,12 @@ local function createShell(spawn, exit, model)
     local objects = {}
     local poi = { exit = exit }
     local modelHash = type(model) == 'string' and joaat(model) or model
-    QB.stream.loadModel(modelHash)
+    Kora.stream.loadModel(modelHash)
     local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
     SetModelAsNoLongerNeeded(modelHash)
     FreezeEntityPosition(house, true)
     objects[#objects + 1] = house
-    QB.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
+    Kora.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
     return { objects, poi }
 end
 
