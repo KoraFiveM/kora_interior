@@ -72,28 +72,21 @@ legacyExport('DespawnInterior', function(objects, cb)
 end)
 
 local function createShell(spawn, exit, model)
-    local objects = {}
-    local poi = { exit = exit }
     local modelHash = type(model) == 'string' and joaat(model) or model
     Kora.stream.loadModel(modelHash)
     local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
     SetModelAsNoLongerNeeded(modelHash)
     FreezeEntityPosition(house, true)
-    objects[#objects + 1] = house
     Kora.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
-    return { objects, poi }
+    return { { house }, { exit = exit } }
 end
 
-exports('createShell', function(spawn, exit, model)
-    return createShell(spawn, exit, model)
-end)
-
--- Starting Apartment
+exports('createShell', createShell)
 
 legacyExport('CreateApartmentFurnished', function(spawn)
     local exit = vector4(1.5, -10.0, 0.0, 358.50)
     local shell = createShell(spawn, exit, 'furnitured_midapart')
-    local objects, poi = shell[1], shell[2]
+    local poi = shell[2]
 
     poi.clothes = vector4(-6.028, -9.5, 1.2, 2.263)
     poi.stash = vector4(-7.305, -3.922, 0.5, 2.263)
@@ -106,12 +99,11 @@ legacyExport('CreateApartmentFurnished', function(spawn)
         end)
     end
 
-    return { objects, poi }
+    return shell
 end)
 
 legacyExport('CreateHouseRobbery', function(spawn)
-    local shell = createShell(spawn, vector4(1.46, -10.33, 1.06, 0.39), 'furnitured_midapart')
-    return { shell[1], shell[2] }
+    return createShell(spawn, vector4(1.46, -10.33, 1.06, 0.39), 'furnitured_midapart')
 end)
 
 local SHELLS = {
