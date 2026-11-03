@@ -13,14 +13,18 @@ exports = setmetatable({}, { __call = function(_, name, fn) provided[name] = fn 
     end }) end })
 function vector4(x,y,z,w) return {x=x,y=y,z=z,w=w} end
 function vector3(x,y,z) return {x=x,y=y,z=z} end
-function joaat(model) return model end
-function CreateObject(model,x,y,z) entities[#entities+1] = true; created[#created+1]={model,x,y,z}; return #entities end
+local names, missing = {}, {}
+function joaat(model) local hash = 0; for i = 1, #model do hash = (hash * 31 + model:byte(i)) % 2147483647 end; names[hash] = model; return hash end
+function IsModelInCdimage(hash) return not missing[names[hash]] end
+function IsModelValid(hash) return not missing[names[hash]] end
+function CreateObjectNoOffset(model,x,y,z) return CreateObject(model,x,y,z) end
+function CreateObject(model,x,y,z) entities[#entities+1] = true; created[#created+1]={names[model] or model,x,y,z}; return #entities end
 function DoesEntityExist(entity) return entities[entity] == true end
 function DeleteEntity(entity) entities[entity] = false end
 function SetModelAsNoLongerNeeded() released = released + 1 end
 function FreezeEntityPosition() end
 Kora.visuals = {fade = function(position) fades[#fades+1] = position end}
-Kora.stream = {loadModel = function() return 123 end}
+Kora.stream = {loadModel = function(model, cb) if cb then cb(model) end return 123 end}
 dofile('client/main.lua')
 dofile('client/optional.lua')
 local checks = 0
@@ -59,4 +63,35 @@ check(created[#created][1] == 'furnitured_motel', 'optional furnished motel rema
 local callback = false
 legacy('DespawnInterior')(result[1], function() callback=true end)
 check(not entities[result[1][1]] and callback, 'despawn deletes object and finishes callback')
+-- F#313: no callback is fine, and geometry owned by another resource is left alone.
+local own = legacy('CreateTier1House')({x=0,y=0,z=0})
+check(pcall(legacy('DespawnInterior'), own[1]) and not entities[own[1][1]], 'despawn without a callback does not error')
+local realInvoker = GetInvokingResource
+function GetInvokingResource() return 'kora_housing' end
+local foreign = provided.createGeometry({x=0,y=0,z=0}, {}, 'shell_v16low')
+GetInvokingResource = realInvoker
+legacy('DespawnInterior')(foreign[1])
+check(entities[foreign[1][1]], 'despawn leaves geometry owned by another resource')
+-- F#311/F#312: a missing optional shell returns false, reason without teleporting or creating anything.
+missing.shell_banham = true
+local before, fadesBefore = #created, #fades
+local ok, shell, reason = pcall(legacy('CreateBanham'), {x=0,y=0,z=0})
+check(ok and shell == false and reason == 'Shell model is not installed.', 'missing shell model returns false, reason')
+check(#created == before and #fades == fadesBefore, 'missing shell model never creates an object or fades')
+local okGeo, geo, geoReason = pcall(provided.createGeometry, {x=0,y=0,z=0}, {}, 'shell_banham')
+check(okGeo and geo == false and geoReason == 'Shell model is not installed.', 'createGeometry reports a missing model instead of raising')
+missing.shell_banham = nil
+-- F#312: legacy shells are owned by the caller and removed when it stops.
+local tracked = legacy('CreateTier1House')({x=0,y=0,z=0})
+net.fire('onClientResourceStop', 'legacy-consumer')
+check(not entities[tracked[1][1]], 'caller stop removes legacy shells')
+-- F#314: first-character clothing goes to the event kora_clothing handles.
+local triggered, timeouts, realTrigger = {}, {}, TriggerEvent
+function SetTimeout(_, fn) timeouts[#timeouts+1] = fn end
+net.fire('qb-interior:client:SetNewState', true)
+legacy('CreateApartmentFurnished')({x=0,y=0,z=0})
+function TriggerEvent(name) triggered[#triggered+1] = name end
+for _, fn in ipairs(timeouts) do fn() end
+TriggerEvent = realTrigger
+check(triggered[1] == 'qb-clothing:client:CreateFirstCharacter', 'new characters open the kora_clothing first-character menu')
 print(('qbinterior legacy exports: %d checks passed'):format(checks))

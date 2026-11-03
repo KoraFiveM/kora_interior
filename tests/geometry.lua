@@ -14,6 +14,9 @@ function CreateObject(_,x,y,z) entities[91] = true; created[#created+1]={'legacy
 function DoesEntityExist(entity) return entities[entity] == true end
 function DeleteEntity(entity) entities[entity] = nil end
 function FreezeEntityPosition() end
+local missingModel = false
+function IsModelInCdimage() return not missingModel end
+function IsModelValid() return not missingModel end
 Kora.visuals = { fade = function() fades = fades + 1 end }
 local stopWhileLoading = false
 Kora.stream = { loadModel = function(_, callback)
@@ -44,4 +47,9 @@ check(not entities[91], 'owner stop removes geometry')
 stopWhileLoading = true
 check(provided.createGeometry({ x = 1, y = 2, z = 3 }, {}, 'shell_v16low') == false and not entities[91], 'owner stop during streaming cannot leave a late shell')
 check(provided.createGeometry({ x = math.huge, y = 2, z = 3 }, {}, 'shell_v16low') == false, 'non-finite shell origins are rejected')
+stopWhileLoading = false
+missingModel = true
+local okMissing, missingResult, missingReason = pcall(provided.createGeometry, { x = 1, y = 2, z = 3 }, {}, 'shell_not_installed')
+check(okMissing and missingResult == false and missingReason == 'Shell model is not installed.', 'a missing model returns false, reason instead of raising')
+missingModel = false
 print(('qbinterior geometry: %d checks passed'):format(checks))

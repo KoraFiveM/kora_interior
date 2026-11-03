@@ -11,6 +11,20 @@ local geometry = Kora.resources.registry(function(entity)
     if DoesEntityExist(entity) then DeleteEntity(entity) end
 end)
 
+local MISSING_MODEL = 'Shell model is not installed.'
+
+-- Kora.stream.loadModel asserts on an unknown model, so an optional shell pack
+-- that is not installed must be caught before loading (F#311, F#312).
+local function installedModel(model)
+    local hash = type(model) == 'string' and model ~= '' and joaat(model) or model
+    if math.type(hash) ~= 'integer' then return nil end
+    -- Natives always exist in game. Some downstream headless suites (kora_housing)
+    -- load this file without the stubs, so a missing native is treated as installed.
+    if IsModelInCdimage and not IsModelInCdimage(hash) then return nil end
+    if IsModelValid and not IsModelValid(hash) then return nil end
+    return hash
+end
+
 -- Shared housing scenes need geometry without the legacy entry teleport.
 exports('createGeometry', function(spawn, exit, model, placement)
     local owner = GetInvokingResource() or GetCurrentResourceName()
@@ -19,8 +33,10 @@ exports('createGeometry', function(spawn, exit, model, placement)
         if not spawn or not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
     end
     if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
+    local modelHash = installedModel(model)
+    if not modelHash then return false, MISSING_MODEL end
     local entity
-    local loaded, err = Kora.stream.loadModel(model, function(hash)
+    local loaded, err = Kora.stream.loadModel(modelHash, function(hash)
         if stopped[owner] ~= generation then return end
         -- Stock factories use CreateObject's model offset; centered native scenes
         -- deliberately keep their existing CreateObjectNoOffset contract.
@@ -58,25 +74,43 @@ AddEventHandler('onClientResourceStop', function(resource)
     ownedGeometry = {}
 end)
 
+-- Stock apartments scripts set this before CreateApartmentFurnished so a new
+-- character gets the first-character clothing menu (kora_clothing's event).
 RegisterNetEvent('qb-interior:client:SetNewState', function(bool)
-    IsNew = bool
+    IsNew = bool == true
 end)
 
+-- Deletes the objects a legacy factory returned. Geometry another resource owns
+-- is left alone; ours (or untracked handles, as stock allowed) is removed.
 legacyExport('DespawnInterior', function(objects, cb)
-    for _, obj in pairs(objects) do
-        if DoesEntityExist(obj) then
-            DeleteEntity(obj)
+    local owner = GetInvokingResource() or GetCurrentResourceName()
+    if type(objects) == 'table' then
+        for _, obj in pairs(objects) do
+            local tracked = geometry.owner(obj)
+            if tracked == nil or tracked == owner then
+                geometry.untrack(obj)
+                ownedGeometry[obj] = nil
+                if DoesEntityExist(obj) then DeleteEntity(obj) end
+            end
         end
     end
-    cb()
+    if type(cb) == 'function' then cb() end
 end)
 
+-- Legacy factory: creates the shell, fades the player to the exit and returns
+-- { objects, poi }, or false, reason when the model is missing or the object
+-- could not be created (without moving the player). The shell is owned by the
+-- invoking resource and removed when it (or kora_interior) stops.
 local function createShell(spawn, exit, model)
-    local modelHash = type(model) == 'string' and joaat(model) or model
-    Kora.stream.loadModel(modelHash)
+    local modelHash = installedModel(model)
+    if not modelHash then return false, MISSING_MODEL end
+    if not Kora.stream.loadModel(modelHash) then return false, 'Shell model could not be loaded.' end
     local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
     SetModelAsNoLongerNeeded(modelHash)
+    if not house or house == 0 or not DoesEntityExist(house) then return false, 'Shell geometry could not be created.' end
     FreezeEntityPosition(house, true)
+    geometry.track(GetInvokingResource() or GetCurrentResourceName(), house)
+    ownedGeometry[house] = true
     Kora.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
     return { { house }, { exit = exit } }
 end
@@ -85,7 +119,8 @@ exports('createShell', createShell)
 
 legacyExport('CreateApartmentFurnished', function(spawn)
     local exit = vector4(1.5, -10.0, 0.0, 358.50)
-    local shell = createShell(spawn, exit, 'furnitured_midapart')
+    local shell, err = createShell(spawn, exit, 'furnitured_midapart')
+    if not shell then return false, err end
     local poi = shell[2]
 
     poi.clothes = vector4(-6.028, -9.5, 1.2, 2.263)
@@ -94,7 +129,7 @@ legacyExport('CreateApartmentFurnished', function(spawn)
 
     if IsNew then
         SetTimeout(750, function()
-            TriggerEvent('qb-clothes:client:CreateFirstCharacter')
+            TriggerEvent('qb-clothing:client:CreateFirstCharacter')
             IsNew = false
         end)
     end
