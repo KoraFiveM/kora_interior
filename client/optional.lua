@@ -3,9 +3,7 @@ local function legacyExport(name, handler)
     Kora.compat.provideExport('qb-interior', name, handler)
 end
 
-local function createShell(spawn, exit, model)
-    return exports[GetCurrentResourceName()]:createShell(spawn, exit, model)
-end
+local createShell = KoraInterior.createShell
 
 local SHELLS = {
     -- Medium Housing Shells V1 -- https://www.k4mb1maps.com/package/4672307

@@ -115,6 +115,9 @@ local function createShell(spawn, exit, model)
     return { { house }, { exit = exit } }
 end
 
+-- Shared with client/optional.lua so its factories call it directly.
+KoraInterior = { createShell = createShell }
+
 exports('createShell', createShell)
 
 legacyExport('CreateApartmentFurnished', function(spawn)

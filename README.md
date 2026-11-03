@@ -1,4 +1,6 @@
-# qb-interior
+# kora_interior
+
+Shell interiors for Kora housing, robberies and apartments. It also provides `qb-interior` / `qbinterior`, so stock callers keep working.
 
 **Shells provided by K4MB1**
 
@@ -12,6 +14,10 @@ local shell geometry without fading or moving the player. Models are released
 after creation; objects are owned by the invoking resource and removed when it
 stops. Call `exports.kora_interior:removeGeometry(objects)` to release them sooner.
 Legacy `createShell` and named shell exports retain their entry teleport and authored heading.
+They return `false, reason` without moving the player when the shell model isn't installed
+(for example an optional K4MB1 pack). Shells they create are owned by the calling resource
+and removed when it stops. `DespawnInterior(objects, cb)` never deletes geometry another
+resource owns, and `cb` is optional.
 The optional placement is `centered` (default, `CreateObjectNoOffset`) or
 `legacy` (`CreateObject`, matching stock factories). Neither geometry mode
 teleports. The model offset must not be guessed from an exit coordinate.
