@@ -12,8 +12,9 @@ local shell geometry without fading or moving the player. Models are released
 after creation; objects are owned by the invoking resource and removed when it
 stops. Call `exports.kora_interior:removeGeometry(objects)` to release them sooner.
 Legacy `createShell` and named shell exports retain their entry teleport and authored heading.
-The optional placement is `centered` (default, `CreateObjectNoOffset`) or
-`legacy` (`CreateObject`, matching stock factories). Neither geometry mode
+The optional placement is `centered` (`CreateObjectNoOffset`) or
+`legacy` (`CreateObject`, matching stock factories). When omitted it follows
+`Config.DefaultGeometryPlacement` (default `legacy`). Neither geometry mode
 teleports. The model offset must not be guessed from an exit coordinate.
 
 The bundled standard motel is available as `CreateFurniMotelStandard`; the

@@ -1,5 +1,6 @@
 package.path = '../kora_lib/test/?.lua;' .. package.path
 local net = require('mocks').install()
+Config = { DefaultGeometryPlacement = 'legacy' }
 local invoker = 'kora_housing'
 function GetCurrentResourceName() return 'kora_interior' end
 function GetInvokingResource() return invoker end
@@ -29,7 +30,7 @@ local function check(value, message) assert(value, message); checks = checks + 1
 local result = provided.createGeometry({ x = 1, y = 2, z = 3 }, { x = 4, y = 5, z = 6 }, 'shell_v16low')
 check(result[1][1] == 91 and entities[91], 'geometry returns its owned object')
 check(released == 1 and fades == 0, 'geometry uses the releasing model callback and never invokes the entry fade')
-check(created[1][1] == 'centered' and created[1][4] == 3, 'default geometry retains exact no-offset origin')
+check(created[1][1] == 'legacy' and created[1][4] == 3, 'default geometry follows Config.DefaultGeometryPlacement (legacy)')
 invoker = 'foreign'
 check(provided.removeGeometry(result[1]) == false and entities[91], 'foreign resources cannot remove this geometry')
 invoker = 'kora_housing'

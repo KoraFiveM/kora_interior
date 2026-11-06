@@ -19,6 +19,8 @@ exports('createGeometry', function(spawn, exit, model, placement)
         if not spawn or not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
     end
     if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
+    -- Callers passing no mode (housing) get the stock factories' placement, so the shell is not shifted into the world.
+    if placement == nil then placement = Config and Config.DefaultGeometryPlacement or 'centered' end
     local entity
     local loaded, err = Kora.stream.loadModel(model, function(hash)
         if stopped[owner] ~= generation then return end

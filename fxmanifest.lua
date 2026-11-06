@@ -12,6 +12,10 @@ this_is_a_map 'yes'
 
 dependency 'kora_lib'
 
+shared_scripts {
+    'config.lua'
+}
+
 client_scripts {
     '@kora_lib/init.lua',
     'client/main.lua',
