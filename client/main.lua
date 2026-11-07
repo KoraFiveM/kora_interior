@@ -15,8 +15,9 @@ end)
 exports('createGeometry', function(spawn, exit, model, placement)
     local owner = GetInvokingResource() or GetCurrentResourceName()
     local generation = stopped[owner]
+    if not spawn then return false, 'Invalid shell origin.' end
     for _, axis in ipairs({ 'x', 'y', 'z' }) do
-        if not spawn or not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
+        if not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
     end
     if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
     -- Callers passing no mode (housing) get the stock factories' placement, so the shell is not shifted into the world.
@@ -65,19 +66,21 @@ RegisterNetEvent('qb-interior:client:SetNewState', function(bool)
 end)
 
 legacyExport('DespawnInterior', function(objects, cb)
-    for _, obj in pairs(objects) do
+    for _, obj in pairs(objects or {}) do
         if DoesEntityExist(obj) then
             DeleteEntity(obj)
         end
     end
-    cb()
+    if cb then cb() end
 end)
 
 local function createShell(spawn, exit, model)
     local modelHash = type(model) == 'string' and joaat(model) or model
-    Kora.stream.loadModel(modelHash)
+    local loaded, err = Kora.stream.loadModel(modelHash)
+    if not loaded then return false, err or 'Shell model could not be streamed.' end
     local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
     SetModelAsNoLongerNeeded(modelHash)
+    if not house or house == 0 or not DoesEntityExist(house) then return false, 'Shell geometry could not be created.' end
     FreezeEntityPosition(house, true)
     Kora.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
     return { { house }, { exit = exit } }
