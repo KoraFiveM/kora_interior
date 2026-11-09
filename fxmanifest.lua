@@ -27,3 +27,6 @@ files {
 }
 
 data_file 'DLC_ITYP_REQUEST' 'stream/starter_shells_k4mb1.ytyp'
+
+-- kora_qa: Gherkin test scenarios (converted legacy tests), see [kora]/kora_qa/README.md
+qa_feature 'tests/*.feature'
