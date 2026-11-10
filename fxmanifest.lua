@@ -3,8 +3,6 @@ game 'gta5'
 
 provide 'qb-interior'
 lua54 'yes'
--- Keep the legacy resource name resolvable for exports['qbinterior'] callers.
-provide 'qbinterior'
 author 'Kakarot'
 description 'Collection of shell models with exports for creating them'
 version '1.2.0'

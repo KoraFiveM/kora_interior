@@ -59,4 +59,4 @@ check(created[#created][1] == 'furnitured_motel', 'optional furnished motel rema
 local callback = false
 legacy('DespawnInterior')(result[1], function() callback=true end)
 check(not entities[result[1][1]] and callback, 'despawn deletes object and finishes callback')
-print(('qbinterior legacy exports: %d checks passed'):format(checks))
+print(('kora_interior legacy exports: %d checks passed'):format(checks))

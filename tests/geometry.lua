@@ -45,4 +45,4 @@ check(not entities[91], 'owner stop removes geometry')
 stopWhileLoading = true
 check(provided.createGeometry({ x = 1, y = 2, z = 3 }, {}, 'shell_v16low') == false and not entities[91], 'owner stop during streaming cannot leave a late shell')
 check(provided.createGeometry({ x = math.huge, y = 2, z = 3 }, {}, 'shell_v16low') == false, 'non-finite shell origins are rejected')
-print(('qbinterior geometry: %d checks passed'):format(checks))
+print(('kora_interior geometry: %d checks passed'):format(checks))

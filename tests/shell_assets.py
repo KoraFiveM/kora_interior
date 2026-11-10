@@ -70,4 +70,4 @@ if __name__ == '__main__':
             assert model in report['models'], factory + ' points to an absent archetype'
         assert dict(factories)['CreateGarageMed'] == 'shell_garagem'
         assert dict(factories)['CreateFurniMotelStandard'] == 'standardmotel_shell'
-        print('qbinterior bundled assets: 16 archetypes, factory models and exact bounds verified')
+        print('kora_interior bundled assets: 16 archetypes, factory models and exact bounds verified')
