@@ -20,6 +20,14 @@ exports('createGeometry', function(spawn, exit, model, placement)
         if not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
     end
     if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
+    -- Kora.stream.loadModel asserts on an unusable model; refuse it here so the
+    -- caller gets `false, reason` as documented instead of an error.
+    if type(model) == 'string' and model ~= '' then
+        model = joaat(model)
+    elseif math.type(model) ~= 'integer' then
+        return false, 'A shell model is required.'
+    end
+    if not IsModelValid(model) then return false, 'Unknown shell model.' end
     -- Callers passing no mode (housing) get the stock factories' placement, so the shell is not shifted into the world.
     if placement == nil then placement = Config and Config.DefaultGeometryPlacement or 'centered' end
     local entity
