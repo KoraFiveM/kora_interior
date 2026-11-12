@@ -5,7 +5,7 @@ provide 'qb-interior'
 lua54 'yes'
 author 'Kakarot'
 description 'Collection of shell models with exports for creating them'
-version '0.1.0'
+version '0.2.0'
 this_is_a_map 'yes'
 
 dependency 'kora_lib'
