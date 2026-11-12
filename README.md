@@ -19,7 +19,7 @@ teleports. The model offset must not be guessed from an exit coordinate.
 
 The bundled standard motel is available as `CreateFurniMotelStandard`; the
 optional `CreateFurniMotel` remains a separate model. `CreateGarageMed` uses the
-actual bundled `shell_garagem` archetype. See [asset evidence and placement limits](docs/SHELL_GEOMETRY.md).
+actual bundled `shell_garagem` archetype. See [asset evidence and placement limits](docs/shell-geometry.md).
 
 ![image](https://user-images.githubusercontent.com/57848836/158275226-e80563dc-5b71-4883-a485-997878b8d440.png)
 
@@ -42,3 +42,5 @@ actual bundled `shell_garagem` archetype. See [asset evidence and placement limi
     along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 Existing shell factories and `DespawnInterior` are also exported under `qb-interior`, using the same handlers and legacy object/POI return shapes. Native geometry ownership helpers remain under `kora_interior`. Optional shell models still require their corresponding installed assets; registering a factory does not install a paid or external shell pack.
+
+Full documentation: see [docs/](docs/index.md).
