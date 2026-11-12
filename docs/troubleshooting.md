@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-sidebar_position: 7
+sidebar_position: 10
 ---
 
 # Troubleshooting
@@ -19,7 +19,7 @@ Factories return `false, reason` if the model does not stream or the object cann
 
 ## `createGeometry` returns `false`
 
-The second return value is the reason. Possible messages from the code: `Invalid shell origin.`, `Invalid shell placement mode.`, `A shell model is required.`, `Unknown shell model.`, or `Shell geometry could not be created.` (also returned if the calling resource stopped while the model was loading). See [Exports](./exports.md).
+The second return value is the reason. Possible messages from the code: `Invalid shell origin.`, `Invalid shell placement mode.`, `A shell model is required.`, `Unknown shell model.`, or `Shell geometry could not be created.` (also returned if the calling resource stopped while the model was loading). See [Exports](./api/index.md).
 
 ## `removeGeometry` returns `false`
 
