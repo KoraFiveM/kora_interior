@@ -1,3 +1,8 @@
+---
+title: Shell geometry
+sidebar_position: 8
+---
+
 # Bundled shell geometry evidence
 
 The sixteen archetypes in [bundled-shell-bounds.json](bundled-shell-bounds.json)
