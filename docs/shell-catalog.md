@@ -1,11 +1,11 @@
 ---
 title: Shell catalog
-sidebar_position: 3
+sidebar_position: 6
 ---
 
 # Shell catalog
 
-Every factory export takes `spawn` (a vector3 or any table with `x`, `y`, `z`) and returns the shell result described in [Exports](./exports.md). The `exit` column is the offset from `spawn` and heading `w` that the player is teleported to on entry. Each factory is exported under both `kora_interior` and `qb-interior`.
+Every factory export takes `spawn` (a vector3 or any table with `x`, `y`, `z`) and returns the shell result described in [Exports](./api/index.md). The `exit` column is the offset from `spawn` and heading `w` that the player is teleported to on entry. Each factory is exported under both `kora_interior` and `qb-interior`.
 
 Factory exports are defined by two tables in the code: bundled shells in `client/main.lua` and optional shells in `client/optional.lua`.
 
