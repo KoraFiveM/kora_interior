@@ -15,19 +15,19 @@ end)
 exports('createGeometry', function(spawn, exit, model, placement)
     local owner = GetInvokingResource() or GetCurrentResourceName()
     local generation = stopped[owner]
-    if not spawn then return false, 'Invalid shell origin.' end
+    if not spawn then return false, Kora.lang('Error.invalid_shell_origin') end
     for _, axis in ipairs({ 'x', 'y', 'z' }) do
-        if not Kora.util.isFiniteNumber(spawn[axis]) then return false, 'Invalid shell origin.' end
+        if not Kora.util.isFiniteNumber(spawn[axis]) then return false, Kora.lang('Error.invalid_shell_origin') end
     end
-    if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, 'Invalid shell placement mode.' end
+    if placement ~= nil and placement ~= 'centered' and placement ~= 'legacy' then return false, Kora.lang('Error.invalid_shell_placement') end
     -- Kora.stream.loadModel asserts on an unusable model; refuse it here so the
     -- caller gets `false, reason` as documented instead of an error.
     if type(model) == 'string' and model ~= '' then
         model = joaat(model)
     elseif math.type(model) ~= 'integer' then
-        return false, 'A shell model is required.'
+        return false, Kora.lang('Error.shell_model_required')
     end
-    if not IsModelValid(model) then return false, 'Unknown shell model.' end
+    if not IsModelValid(model) then return false, Kora.lang('Error.unknown_shell_model') end
     -- Callers passing no mode (housing) get the stock factories' placement, so the shell is not shifted into the world.
     if placement == nil then placement = Config and Config.DefaultGeometryPlacement or 'centered' end
     local entity
@@ -42,15 +42,15 @@ exports('createGeometry', function(spawn, exit, model, placement)
         geometry.track(owner, entity)
         ownedGeometry[entity] = true
     end)
-    if not loaded or not entity then return false, err or 'Shell geometry could not be created.' end
+    if not loaded or not entity then return false, err or Kora.lang('Error.geometry_creation_failed') end
     return { { entity }, { exit = exit } }
 end)
 
 exports('removeGeometry', function(objects)
-    if type(objects) ~= 'table' then return false, 'Shell objects are required.' end
+    if type(objects) ~= 'table' then return false, Kora.lang('Error.shell_objects_required') end
     local owner = GetInvokingResource() or GetCurrentResourceName()
     for _, entity in ipairs(objects) do
-        if geometry.owner(entity) ~= owner then return false, 'Shell geometry belongs to another resource.' end
+        if geometry.owner(entity) ~= owner then return false, Kora.lang('Error.shell_owned_by_another_resource') end
     end
     for _, entity in ipairs(objects) do
         geometry.untrack(entity)
@@ -85,10 +85,10 @@ end)
 local function createShell(spawn, exit, model)
     local modelHash = type(model) == 'string' and joaat(model) or model
     local loaded, err = Kora.stream.loadModel(modelHash)
-    if not loaded then return false, err or 'Shell model could not be streamed.' end
+    if not loaded then return false, err or Kora.lang('Error.shell_model_stream_failed') end
     local house = CreateObject(modelHash, spawn.x, spawn.y, spawn.z, false, false, false)
     SetModelAsNoLongerNeeded(modelHash)
-    if not house or house == 0 or not DoesEntityExist(house) then return false, 'Shell geometry could not be created.' end
+    if not house or house == 0 or not DoesEntityExist(house) then return false, Kora.lang('Error.geometry_creation_failed') end
     FreezeEntityPosition(house, true)
     Kora.visuals.fade(vector4(spawn.x + exit.x, spawn.y + exit.y, spawn.z + exit.z, exit.w or exit.h or 0))
     return { { house }, { exit = exit } }

@@ -7,9 +7,9 @@
 > **Help shape Kora:** try it out, share feedback, report bugs through this
 > repository’s Issues, and contribute improvements through pull requests.
 
-# qb-interior
+# Kora-interior
 
-**Shells provided by K4MB1**
+**Shells provided by K4MB1 Originally for QBCore**
 
 https://www.k4mb1maps.com/
 

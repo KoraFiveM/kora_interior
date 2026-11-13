@@ -3,7 +3,7 @@ game 'gta5'
 
 provide 'qb-interior'
 lua54 'yes'
-author 'Kakarot'
+author 'Kora + K4mb1 original work with QBCore'
 description 'Collection of shell models with exports for creating them'
 version '0.2.1'
 this_is_a_map 'yes'
@@ -11,7 +11,7 @@ this_is_a_map 'yes'
 dependency 'kora_lib'
 
 shared_scripts {
-    'config.lua'
+    'shared/config.lua'
 }
 
 client_scripts {
@@ -21,7 +21,8 @@ client_scripts {
 }
 
 files {
-    'stream/starter_shells_k4mb1.ytyp'
+    'stream/starter_shells_k4mb1.ytyp',
+    'locales/*.lua'
 }
 
 data_file 'DLC_ITYP_REQUEST' 'stream/starter_shells_k4mb1.ytyp'
