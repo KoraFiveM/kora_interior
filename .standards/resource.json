@@ -6,7 +6,9 @@
       "client/main.lua",
       "client/optional.lua"
     ],
-    "server": [],
+    "server": [
+      "kora_versioncheck.lua"
+    ],
     "shared": [
       "config.lua"
     ],
